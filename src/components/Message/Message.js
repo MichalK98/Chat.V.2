@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class Message extends Component {
-
-    state = {
-        messages: [
-            {id: 1, username: 'You', message: 'Hi, try out my new Chat.V.2!'},
-            {id: 2, username: 'Mattias', message: 'Ehh..'},
-            {id: 3, username: 'Alien', message: 'Hello there!'}
-        ]
-    }
-    
     render() {
         return (
             <ul id="chatroom">
-                {this.state.messages.map((msg) => (
+                {this.props.messages.map((msg) => (
                     <li className={(msg.username == 'You' ? "chat-me" : "")} key={msg.id}>
                         <p>{msg.message}</p>
                         <small>{msg.username}</small>
@@ -23,4 +15,11 @@ class Message extends Component {
         )
     }
 }
-export default Message;
+
+const mapStateToProps = (state) => {
+    return {
+        messages: state.messages
+    }
+}
+
+export default connect(mapStateToProps)(Message);
