@@ -1,0 +1,32 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Michal Kurowski",
+  "license": "",
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@svgr/webpack": "^4.3.3",
+    "css-loader": "^3.2.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-scripts": "^3.1.2",
+    "simplebar": "^4.2.3",
+    "simplebar-react": "^1.2.3",
+    "socket.io": "^2.3.0",
+    "style-loader": "^1.0.0"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "dist/*",
+      "src/*"
+    ]
+  }
+}
