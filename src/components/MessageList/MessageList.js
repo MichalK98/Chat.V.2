@@ -21,9 +21,7 @@ class MessageList extends Component {
     render() {
         return (
             <SimpleBar className="chat-body">
-                <ul id="chatroom">
-                    <Message/>
-                </ul>
+                <Message/>
                 <div style={{ float:"left", clear: "both" }} ref={(el) => { this.messagesEnd = el; }}></div>
             </SimpleBar>
         )
