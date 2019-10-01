@@ -5,21 +5,34 @@ import { connect } from 'react-redux';
 import SendSvg from '../../svg/send.svg';
 
 class Submit extends Component {
-    handleChange = (e) => {
+
+    state = {
+        message: []
+    }
+
+    clear = async () => {
+        await this.setState({
+            message: ''
+        });
+    }
+    
+    handleChange = async (e) => {
+        await this.setState({
+            message: e.target.value
+        });
     }
     
     handleSubmit = (e) => {
         e.preventDefault();
-        
-        this.props.addMessage('hello');
+        this.props.writeMessage(this.state.message);
+        this.clear();
     }
 
     render() {
-        console.log(this.props);
         return (
             <div className="chat-footer">
                 <form onSubmit={this.handleSubmit} autoComplete="off">
-                    <input  onChange={this.handleChange} value={this.props.message} type="text" placeholder="Skriv något..."/>
+                    <input  onChange={this.handleChange} value={this.state.message} type="text" placeholder="Skriv något..."/>
                     <button id="btnSend"><SendSvg/></button>
                 </form>
             </div>
@@ -35,7 +48,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addMessage: (message) => { dispatch({type: 'ADD_MESSAGE', message: message})}
+        writeMessage: (message) => { dispatch({type: 'WRITE_MESSAGE', messages: {id: Math.random(), username: 'You', message: message}})}
     }
 }
 

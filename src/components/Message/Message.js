@@ -18,7 +18,7 @@ class Message extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.messages
+        messages: state.message.messages
     }
 }
 

@@ -1,14 +1,10 @@
-const initState = {
-    messages: [
-        {id: 1, username: 'You', message: 'Hi, data from reducer!'},
-        {id: 2, username: 'Mattias', message: 'Wow..'},
-        {id: 3, username: 'Alien', message: 'Avesome!'}
-    ]
-}
+import { combineReducers } from 'redux';
 
-const rootReducer = (state = initState, action) => {
-    console.log(action);
-    return state;
-}
+// Reducers
+import messageReducer from './messageReducer';
+
+const rootReducer = combineReducers({
+    message: messageReducer
+});
 
 export default rootReducer;
