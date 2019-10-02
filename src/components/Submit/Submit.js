@@ -48,7 +48,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        writeMessage: (message) => { dispatch({type: 'WRITE_MESSAGE', messages: {id: Math.random(), username: 'You', message: message}})}
+        writeMessage: (message) => {
+            dispatch({
+                type: 'WRITE_MESSAGE',
+                message: {
+                    id: Math.random(),
+                    username: 'You',
+                    message: message
+                }
+            });
+        }
     }
 }
 
