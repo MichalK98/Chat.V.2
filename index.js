@@ -14,7 +14,22 @@ app.get("/", (req, res) => {
 
 server = app.listen(PORT);
 
+// Socket.io
+const io = require('socket.io')(server);
+
+io.on('connection', socket => {
+
+    socket.on('message', (data) => {
+        socket.emit('message', {message : data.message, username : 'You'});
+        socket.broadcast.emit('message', {message : data.message, username : data.username});
+        console.log("me", data);
+    });
+});
+
+
+// --------------------- //
 console.log("");
 console.log("Listening to port ", + PORT);
 console.log("Ctrl-C to stop");
 console.log("");
+// --------------------- //

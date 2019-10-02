@@ -1,12 +1,28 @@
 import React, { Component } from 'react';
+import socket from "../../ws";
 
 class NameInput extends Component {
 
-    handleSubmit = (e) => {
-        e.preventDefault();
+    state = {
+        username: 'Anonymous'
     }
 
-    handleInput = (e) => {
+    handleInput  = async (e) => {
+        // setState to the user input
+        await this.setState({
+            'username': e.target.value
+        });
+        // if 'username' lenght = 0 setState to 'Anonymous'
+        if (this.state.username.length == 0) {
+            this.setState({
+                'username' : 'Anonymous'
+            });
+        }
+        socket.emit('new_username', {username : this.state.username});
+    }
+
+
+    handleSubmit = (e) => {
         e.preventDefault();
     }
 

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+// Socket.io
+import socket from '../../ws';
+
 // SVG
 import SendSvg from '../../svg/send.svg';
 
@@ -24,8 +27,11 @@ class Submit extends Component {
     
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.writeMessage(this.state.message);
-        this.clear();
+        //Emit message
+        if(this.state.message.length >= 1) {
+            socket.emit('message', {message : this.state.message, username: 'Michal'});
+            this.clear();
+        }
     }
 
     render() {

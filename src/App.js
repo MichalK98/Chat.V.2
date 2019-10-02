@@ -11,11 +11,11 @@ import Submit from './components/Submit';
 function App() {
   return (
     <div className="App">
-        <div className="left">
+        <div className="left" id="channels-wrapper">
             <Header/>
             <ChannelList/>
         </div>
-        <div className="right">
+        <div className="right" id="chat-wrapper">
             <ChannelActive/>
             <MessageList/>
             <Submit/>
