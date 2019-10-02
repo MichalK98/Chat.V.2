@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 const initState = {
     messages: [
         {id: 1, username: 'You', message: 'Hi, data from reducer!'},
