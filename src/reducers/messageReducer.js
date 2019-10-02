@@ -9,10 +9,11 @@ const initState = {
 }
 
 const messageReducer = (state = initState, action) => {
-    if (action.type === 'WRITE_MESSAGE') {
-        return { ...state, messages: [...state.messages, action.message] };
-    } else {
-        return state;
+    switch (action.type) {
+        case "WRITE_MESSAGE":
+            return { ...state, messages: [...state.messages, action.message] };
+        default:
+            return state;
     }
 }
 
