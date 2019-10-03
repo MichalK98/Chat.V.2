@@ -20,10 +20,10 @@ const io = require('socket.io')(server);
 io.on('connection', socket => {
 
     socket.on('message', (data) => {
-        socket.emit('message', {message : data.message, username : 'You'});
-        socket.broadcast.emit('message', {message : data.message, username : data.username});
-        console.log("me", data);
+        socket.emit('message', {id: data.id, message : data.message, username : 'You'});
+        socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username});
     });
+    
 });
 
 

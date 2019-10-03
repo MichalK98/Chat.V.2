@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 // Socket.io
 import socket from '../../ws';
@@ -29,7 +28,7 @@ class Submit extends Component {
         e.preventDefault();
         //Emit message
         if(this.state.message.length >= 1) {
-            socket.emit('message', {message : this.state.message, username: 'Michal'});
+            socket.emit('message', {id: Math.random(), message: this.state.message, username: 'Michal'});
             this.clear();
         }
     }
@@ -46,25 +45,4 @@ class Submit extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        writeMessage: (message) => {
-            dispatch({
-                type: 'WRITE_MESSAGE',
-                message: {
-                    id: Math.random(),
-                    username: 'You',
-                    message: message
-                }
-            });
-        }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Submit);
+export default Submit;

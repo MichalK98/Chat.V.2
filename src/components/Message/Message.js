@@ -7,7 +7,7 @@ import socket from '../../ws';
 class Message extends Component {
     constructor() {
         socket.on('message', (data) => {
-            console.log(data)
+            console.log('Message constructor', data);
             // push new message to array that exists in state
             this.setState({
                 messages: [...this.state.messages, data]
@@ -36,8 +36,8 @@ class Message extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.message.messages
+        username: state.username
     }
 }
 
-export default connect(mapStateToProps)(Message);
+export default connect(mapStateToProps)(Message);   
