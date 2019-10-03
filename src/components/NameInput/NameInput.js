@@ -3,10 +3,6 @@ import socket from "../../ws";
 
 class NameInput extends Component {
 
-    state = {
-        username: 'Anonymous'
-    }
-
     handleInput  = async (e) => {
         // // setState to the user input
         // await this.setState({

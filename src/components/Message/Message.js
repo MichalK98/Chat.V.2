@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 // Socket.io
 import socket from '../../ws';
@@ -7,7 +6,6 @@ import socket from '../../ws';
 class Message extends Component {
     constructor() {
         socket.on('message', (data) => {
-            console.log('Message constructor', data);
             // push new message to array that exists in state
             this.setState({
                 messages: [...this.state.messages, data]
@@ -21,6 +19,7 @@ class Message extends Component {
     }
 
     render() {
+        console.log(this.props);
         return (
             <ul id="chatroom">
                 {this.state.messages.map((msg) => (
@@ -34,10 +33,4 @@ class Message extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        username: state.username
-    }
-}
-
-export default connect(mapStateToProps)(Message);   
+export default Message;   
