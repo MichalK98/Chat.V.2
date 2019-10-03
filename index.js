@@ -18,17 +18,20 @@ server = app.listen(PORT);
 const sockets = require('socket.io')(server,{pingInterval: 1000});
 
 var count = 0;
-sockets.on('connection', function (socket) {
-    count++;
-    socket.emit('counter', {count:count});
-
-    /* Disconnect socket */
-    socket.on('disconnect', function() {
-        count--;
-        socket.emit('counter', {count:count});
-        console.log('d',count);
+sockets.on('connection', (socket) => {
+    onConnect(socket);
+    sockets.emit('onConnect')
+    socket.on('disconnect', () => {
+        onDisconnect(socket);
     });
-    console.log('c', count);
+    function onConnect(socket) {
+        count++;
+        sockets.emit("counter", {count:count});
+    }
+    function onDisconnect(socket) {
+        count--;
+        sockets.emit("counter", {count:count});
+    }
 });
 
 sockets.on('connection', socket => {
