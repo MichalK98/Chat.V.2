@@ -3,6 +3,11 @@ const initState = {
 }
 
 const usernameReducer = (state = initState, action) => {
+    if (action.type === 'UPDATE_USERNAME') {
+        return {
+            username: action.username
+        }
+    }
     return state;
 }
 

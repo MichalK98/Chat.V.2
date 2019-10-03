@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import socket from "../../ws";
+import { connect } from 'react-redux';
 
 class NameInput extends Component {
 
     handleInput  = async (e) => {
-        // // setState to the user input
-        // await this.setState({
-        //     'username': e.target.value
-        // });
-        // // if 'username' lenght = 0 setState to 'Anonymous'
+        // setState to the user input
+        await this.setState({
+            'username': e.target.value
+        });
+        this.props.updateMessage(this.state.username);
+        // if 'username' lenght = 0 setState to 'Anonymous'
         // if (this.state.username.length == 0) {
         //     this.setState({
         //         'username' : 'Anonymous'
         //     });
         // }
-        // socket.emit('new_username', {username : this.state.username});
     }
 
 
@@ -30,4 +30,17 @@ class NameInput extends Component {
         )
     }
 }
-export default NameInput;
+
+const mapStateToProps = (state) => {
+    return {
+        username: state.username.username
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateMessage: (username) => { dispatch({type: 'UPDATE_USERNAME', username: username})}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NameInput);

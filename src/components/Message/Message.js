@@ -19,7 +19,6 @@ class Message extends Component {
     }
 
     render() {
-        console.log(this.props);
         return (
             <ul id="chatroom">
                 {this.state.messages.map((msg) => (
@@ -33,4 +32,4 @@ class Message extends Component {
     }
 }
 
-export default Message;   
+export default Message;
