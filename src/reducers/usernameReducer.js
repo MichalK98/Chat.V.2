@@ -1,5 +1,5 @@
 const initState = {
-    username: 'Alien'
+    username: 'Anonymous'
 }
 
 const usernameReducer = (state = initState, action) => {

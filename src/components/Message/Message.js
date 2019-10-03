@@ -18,16 +18,31 @@ class Message extends Component {
         messages: []
     }
 
+    scrollToBottom = () => {
+        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+    
+    componentDidMount() {
+        this.scrollToBottom();
+    }
+    
+    componentDidUpdate() {
+        this.scrollToBottom();
+    }
+
     render() {
         return (
-            <ul id="chatroom">
-                {this.state.messages.map((msg) => (
-                    <li className={(msg.username == 'You' ? "chat-me" : "")} key={msg.id}>
-                        <p>{msg.message}</p>
-                        <small>{msg.username}</small>
-                    </li>
-                )).reverse()}
-            </ul>
+            <div>
+                <ul id="chatroom">
+                    {this.state.messages.map((msg) => (
+                        <li className={(msg.username == 'You' ? "chat-me" : "")} key={msg.id}>
+                            <p>{msg.message}</p>
+                            <small>{msg.username}</small>
+                        </li>
+                    )).reverse()}
+                </ul>
+                <div style={{ float:"left", clear: "both" }} ref={(el) => { this.messagesEnd = el; }}></div>
+            </div>
         )
     }
 }

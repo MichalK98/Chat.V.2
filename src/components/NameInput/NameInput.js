@@ -4,17 +4,17 @@ import { connect } from 'react-redux';
 class NameInput extends Component {
 
     handleInput  = async (e) => {
-        // setState to the user input
         await this.setState({
             'username': e.target.value
         });
+
+        if (this.state.username.length == 0) {
+            this.setState({
+                'username' : 'Anonymous'
+            });
+        }
+        
         this.props.updateMessage(this.state.username);
-        // if 'username' lenght = 0 setState to 'Anonymous'
-        // if (this.state.username.length == 0) {
-        //     this.setState({
-        //         'username' : 'Anonymous'
-        //     });
-        // }
     }
 
 
