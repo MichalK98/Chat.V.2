@@ -15,15 +15,27 @@ app.get("/", (req, res) => {
 server = app.listen(PORT);
 
 // Socket.io
-const io = require('socket.io')(server);
+const sockets = require('socket.io')(server,{pingInterval: 1000});
 
-io.on('connection', socket => {
+var count = 0;
+sockets.on('connection', function (socket) {
+    count++;
+    socket.emit('counter', {count:count});
 
+    /* Disconnect socket */
+    socket.on('disconnect', function() {
+        count--;
+        socket.emit('counter', {count:count});
+        console.log('d',count);
+    });
+    console.log('c', count);
+});
+
+sockets.on('connection', socket => {
     socket.on('message', (data) => {
         socket.emit('message', {id: data.id, message : data.message, username : 'You'});
         socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username});
     });
-    
 });
 
 
