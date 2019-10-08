@@ -12,13 +12,6 @@ class ChannelList extends Component {
         return (
             <SimpleBar className="channels-body">
                 <Channel/>
-                <Channel/>
-                <Channel/>
-                <Channel/>
-                <Channel/>
-                <Channel/>
-                <Channel/>
-                <Channel/>
             </SimpleBar>
         )
     }

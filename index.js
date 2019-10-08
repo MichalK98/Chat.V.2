@@ -14,6 +14,19 @@ app.get("/", (req, res) => {
 
 server = app.listen(PORT);
 
+// DB
+const mysql = require('mysql2');
+
+// create the connection to database
+const connection = mysql.createPool({
+    host: 'localhost',
+    port: '3306',
+    database: 'chat',
+    user: 'root',
+    password: 'hYjx2f',
+    namedPlaceholders: true
+});
+
 // Socket.io
 const sockets = require('socket.io')(server,{pingInterval: 1000});
 
@@ -39,34 +52,15 @@ sockets.on('connection', socket => {
         socket.emit('message', {id: data.id, message : data.message, username : 'You'});
         socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username});
     });
+    connection.query(
+        'SELECT * FROM `channels`',
+        (err, res) => {
+            res.forEach(channel => {
+                socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description});
+            });
+        }
+    );
 });
-
-
-// DB
-const mysql = require('mysql2');
-
-// create the connection to database
-const connection = mysql.createPool({
-    host: 'localhost',
-    port: '3306',
-    database: 'chat',
-    user: 'root',
-    password: 'hYjx2f',
-    namedPlaceholders: true
-});
-
-// simple query
-connection.query(
-    'SELECT * FROM `channels`',
-    function(err, results, fields) {
-      console.log(results); // results contains rows returned by server
-      results.forEach(element => {
-          console.log(element.id);
-          console.log(element.title);
-          console.log(element.description);
-      });
-    }
-  );
 
 // --------------------- //
 console.log("");
