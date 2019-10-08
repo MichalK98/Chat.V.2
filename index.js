@@ -54,26 +54,18 @@ sockets.on('connection', socket => {
     });
     // Get all channels
     connection.query(`
-        SELECT
-            *
-        FROM
-            channels;
+        SELECT * FROM channels;
     `, (err, res) => {
             res.forEach(channel => {
                 socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description, icon : channel.icon});
             });
         }
     );
-    // Get last 15 messages
+    // Get last 3 messages
     connection.query(`
-        SELECT
-            *
-        FROM
-            messages
-        ORDER BY
-            id DESC
-        LIMIT
-            3;
+    SELECT * FROM ( 
+        SELECT * FROM messages ORDER BY id DESC LIMIT 3
+    ) messages ORDER BY messages.id
     `, (err, res) => {
             res.forEach(message => {
                 socket.emit('message', {id: message.id, message : message.message, username : message.username});
