@@ -52,11 +52,31 @@ sockets.on('connection', socket => {
         socket.emit('message', {id: data.id, message : data.message, username : 'You'});
         socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username});
     });
-    connection.query(
-        'SELECT * FROM `channels`',
-        (err, res) => {
+    // Get all channels
+    connection.query(`
+        SELECT
+            *
+        FROM
+            channels;
+    `, (err, res) => {
             res.forEach(channel => {
                 socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description, icon : channel.icon});
+            });
+        }
+    );
+    // Get last 15 messages
+    connection.query(`
+        SELECT
+            *
+        FROM
+            messages
+        ORDER BY
+            id DESC
+        LIMIT
+            3;
+    `, (err, res) => {
+            res.forEach(message => {
+                socket.emit('message', {id: message.id, message : message.message, username : message.username});
             });
         }
     );
