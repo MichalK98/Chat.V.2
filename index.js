@@ -49,26 +49,31 @@ sockets.on('connection', (socket) => {
 
 sockets.on('connection', socket => {
     socket.on('message', (data) => {
-        socket.emit('message', {id: data.id, message : data.message, username : 'You'});
-        socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username});
+        connection.query(`
+        INSERT INTO messages (channel_id, username, message) VALUES ( '1', ?, ?);
+            `, [data.username, data.message], () => {
+                socket.emit('message', {id: data.id, message : data.message, username : 'You', date: data.date});
+                socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username, date: data.date});
+            }
+        );
     });
     // Get all channels
     connection.query(`
-        SELECT * FROM channels;
-    `, (err, res) => {
+    SELECT * FROM channels;
+        `, (err, res) => {
             res.forEach(channel => {
                 socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description, icon : channel.icon});
             });
         }
     );
-    // Get last 3 messages
+    // Get last 10 messages
     connection.query(`
     SELECT * FROM ( 
-        SELECT * FROM messages ORDER BY id DESC LIMIT 3
-    ) messages ORDER BY messages.id
-    `, (err, res) => {
+        SELECT * FROM messages ORDER BY id DESC LIMIT 10
+        ) messages ORDER BY messages.id
+        `, (err, res) => {
             res.forEach(message => {
-                socket.emit('message', {id: message.id, message : message.message, username : message.username});
+                socket.emit('message', {id: message.id, message : message.message, username : message.username, date: message.date});
             });
         }
     );
