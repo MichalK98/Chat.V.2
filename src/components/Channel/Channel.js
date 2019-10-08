@@ -5,6 +5,8 @@ import socket from '../../ws';
 
 // SVG
 import HomeSvg from '../../svg/home.svg';
+import ThumbsUpSvg from '../../svg/thumbs-up.svg';
+import CoffeSvg from '../../svg/coffe.svg';
 
 class Channel extends Component {
     constructor() {
@@ -26,7 +28,9 @@ class Channel extends Component {
                 {this.state.channels.map((channel) => (
                     <div className="channels-single" key={channel.id}>
                         <div className="icon">
-                            <HomeSvg/>
+                            {(channel.icon == 'Home' ? <HomeSvg/> : "")}
+                            {(channel.icon == 'Thumbs-Up' ? <ThumbsUpSvg/> : "")}
+                            {(channel.icon == 'Coffe' ? <CoffeSvg/> : "")}
                         </div>
                         <div className="info">
                             <span className="title">#{channel.title}</span>

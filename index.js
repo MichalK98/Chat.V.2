@@ -56,7 +56,7 @@ sockets.on('connection', socket => {
         'SELECT * FROM `channels`',
         (err, res) => {
             res.forEach(channel => {
-                socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description});
+                socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description, icon : channel.icon});
             });
         }
     );
