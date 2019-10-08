@@ -42,6 +42,32 @@ sockets.on('connection', socket => {
 });
 
 
+// DB
+const mysql = require('mysql2');
+
+// create the connection to database
+const connection = mysql.createPool({
+    host: 'localhost',
+    port: '3306',
+    database: 'chat',
+    user: 'root',
+    password: 'hYjx2f',
+    namedPlaceholders: true
+});
+
+// simple query
+connection.query(
+    'SELECT * FROM `channels`',
+    function(err, results, fields) {
+      console.log(results); // results contains rows returned by server
+      results.forEach(element => {
+          console.log(element.id);
+          console.log(element.title);
+          console.log(element.description);
+      });
+    }
+  );
+
 // --------------------- //
 console.log("");
 console.log("Listening to port ", + PORT);
