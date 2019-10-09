@@ -18,15 +18,20 @@ class Channel extends Component {
         });
         super();
     }
+
     state = {
         channels: []
+    }
+
+    handleClick(id) {
+        console.log('Channel_id = ', id);
     }
 
     render() {
         return (
             <div>
                 {this.state.channels.map((channel) => (
-                    <div className="channels-single" key={channel.id}>
+                    <div onClick={this.handleClick.bind(this, channel.id)} className="channels-single" key={channel.id}>
                         <div className="icon">
                             {(channel.icon == 'Home' ? <HomeSvg/> : "")}
                             {(channel.icon == 'Thumbs-Up' ? <ThumbsUpSvg/> : "")}
