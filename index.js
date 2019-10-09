@@ -66,6 +66,7 @@ localeTime = (dbTime) => {
 }
 
 sockets.on('connection', socket => {
+
     // On send msg
     socket.on('message', (data) => {
         connection.query(`
@@ -85,6 +86,7 @@ sockets.on('connection', socket => {
             }
         );
     });
+
     // Get all channels
     connection.query(`
     SELECT * FROM channels;
@@ -94,6 +96,7 @@ sockets.on('connection', socket => {
             });
         }
     );
+
     // Get last 10 messages
     connection.query(`
     SELECT * FROM ( 
@@ -102,35 +105,24 @@ sockets.on('connection', socket => {
         `, (err, res) => {
             res.forEach(message => {
                 socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
-                // console.log(res);
             });
         }
     );
 
-
-
-
-
-
-
-
-
-    connection.query(`
-    SELECT * FROM messages
-        `, (err, res) => {
-            console.log(res);
-        }
-    );
-
-
-
-
-
-
-
-
-
-
+    // Get last 10 messages from channel_id = ?
+    socket.on('channel', (data) => {
+        connection.query(`
+        SELECT * FROM ( 
+            SELECT * FROM messages WHERE channel_id = ? ORDER BY id DESC LIMIT 10
+        ) messages ORDER BY messages.id
+            `, [data.channel_id], (err, res) => {
+                socket.emit('clear');
+                res.forEach(message => {
+                    socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
+                });
+            }
+        );
+    });
 });
 
 // --------------------- //

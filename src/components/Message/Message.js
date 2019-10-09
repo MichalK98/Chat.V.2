@@ -12,6 +12,8 @@ class Message extends Component {
                 messages: [...this.state.messages, data]
             });
         });
+        socket.on('clear', console.log("Ohh boiii"));
+        // socket.on('clear', () => document.getElementsByClassName("chatroom").innerHTML = "");
         super();
     }
 

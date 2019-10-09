@@ -25,6 +25,7 @@ class Channel extends Component {
 
     handleClick(id) {
         console.log('Channel_id = ', id);
+        socket.emit('channel', {channel_id: id});
     }
 
     render() {
