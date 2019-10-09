@@ -47,13 +47,25 @@ sockets.on('connection', (socket) => {
     }
 });
 
+
+
 sockets.on('connection', socket => {
+    // On send msg
     socket.on('message', (data) => {
         connection.query(`
         INSERT INTO messages (channel_id, username, message) VALUES ( '1', ?, ?);
             `, [data.username, data.message], () => {
-                socket.emit('message', {id: data.id, message : data.message, username : 'You', date: data.date});
-                socket.broadcast.emit('message', {id: data.id, message : data.message, username : data.username, date: data.date});
+                connection.query(`
+                SELECT * FROM ( 
+                    SELECT * FROM messages ORDER BY id DESC LIMIT 1
+                    ) messages ORDER BY messages.id
+                    `, (err, res) => {
+                        res.forEach(message => {
+                            socket.emit('message', {id: message.id, message : message.message, username : 'You', date: message.date});
+                            socket.broadcast.emit('message', {id: message.id, message : message.message, username : message.username, date: message.date});
+                        });
+                    }
+                );
             }
         );
     });

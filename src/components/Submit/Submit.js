@@ -29,7 +29,7 @@ class Submit extends Component {
         e.preventDefault();
         //Emit message
         if(this.state.message.length >= 1) {
-            socket.emit('message', {id: this.props.id, message: this.state.message, username: this.props.username});
+            socket.emit('message', {message: this.state.message, username: this.props.username});
             this.clear();
         }
     }
