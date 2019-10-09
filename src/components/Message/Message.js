@@ -39,7 +39,7 @@ class Message extends Component {
                         <li className={(msg.username == 'You' ? "chat-me" : "")} key={msg.id}>
                             <p>{msg.message}</p>
                             <small>{msg.username}</small>
-                            <small>{msg.date ? format(new Date(msg.date), "HH:mm") : ""}</small>
+                            <small>{msg.date ? msg.date : ""}</small>
                         </li>
                     )).reverse()}
                 </ul>

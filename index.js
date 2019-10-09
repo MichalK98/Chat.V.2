@@ -1,5 +1,6 @@
 const express = require('express');
 const compression = require('compression');
+const { format } = require('date-fns');
 
 let PORT = 9009;
 let app = express();
@@ -27,10 +28,15 @@ const connection = mysql.createPool({
     namedPlaceholders: true
 });
 
+connection.on("connection", () => {
+    connection.query("SET time_zone = '+02:00'");
+});
+
 // Socket.io
 const sockets = require('socket.io')(server,{pingInterval: 1000});
 
 var count = 0;
+let locale;
 sockets.on('connection', (socket) => {
     onConnect(socket);
     sockets.emit('onConnect')
@@ -40,6 +46,9 @@ sockets.on('connection', (socket) => {
     function onConnect(socket) {
         count++;
         sockets.emit("counter", {count:count});
+
+        // Get local time
+        locale = Intl.DateTimeFormat().resolvedOptions().locale;
     }
     function onDisconnect(socket) {
         count--;
@@ -47,7 +56,14 @@ sockets.on('connection', (socket) => {
     }
 });
 
+localeTime = (dbTime) => {
+    newTime = format(new Date(dbTime), "HH:mm", locale);
+    // console.log("dbTime: ", dbTime);
+    // console.log("locale: ", locale);
+    // console.log("newTime: ", newTime);
 
+    return newTime;
+}
 
 sockets.on('connection', socket => {
     // On send msg
@@ -61,8 +77,8 @@ sockets.on('connection', socket => {
                     ) messages ORDER BY messages.id
                     `, (err, res) => {
                         res.forEach(message => {
-                            socket.emit('message', {id: message.id, message : message.message, username : 'You', date: message.date});
-                            socket.broadcast.emit('message', {id: message.id, message : message.message, username : message.username, date: message.date});
+                            socket.emit('message', {id: message.id, message : message.message, username : 'You', date: localeTime(message.date)});
+                            socket.broadcast.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
                         });
                     }
                 );
@@ -85,10 +101,36 @@ sockets.on('connection', socket => {
         ) messages ORDER BY messages.id
         `, (err, res) => {
             res.forEach(message => {
-                socket.emit('message', {id: message.id, message : message.message, username : message.username, date: message.date});
+                socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
+                // console.log(res);
             });
         }
     );
+
+
+
+
+
+
+
+
+
+    connection.query(`
+    SELECT * FROM messages
+        `, (err, res) => {
+            console.log(res);
+        }
+    );
+
+
+
+
+
+
+
+
+
+
 });
 
 // --------------------- //
