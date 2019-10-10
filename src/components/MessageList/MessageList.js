@@ -17,6 +17,12 @@ class MessageList extends Component {
                 messages: data
             });
         });
+        socket.on("newMessages", (data) => {
+            console.log(data);
+            this.setState({
+                messages: [...this.state.messages, data[0]]
+            });
+        });
         super();
     }
 
@@ -34,6 +40,7 @@ class MessageList extends Component {
     
     componentDidUpdate() {
         this.scrollToBottom();
+        
     }
     
     render() {
