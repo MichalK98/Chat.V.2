@@ -28,6 +28,7 @@ const connection = mysql.createPool({
     namedPlaceholders: true
 });
 
+// Set the time zone on connection
 connection.on("connection", () => {
     connection.query("SET time_zone = '+02:00'");
 });
@@ -37,10 +38,10 @@ const sockets = require('socket.io')(server,{pingInterval: 1000});
 
 var count = 0;
 let locale;
-sockets.on('connection', (socket) => {
+sockets.on("connection", (socket) => {
     onConnect(socket);
-    sockets.emit('onConnect')
-    socket.on('disconnect', () => {
+    sockets.emit("onConnect")
+    socket.on("disconnect", () => {
         onDisconnect(socket);
     });
     function onConnect(socket) {
@@ -58,29 +59,48 @@ sockets.on('connection', (socket) => {
 
 localeTime = (dbTime) => {
     newTime = format(new Date(dbTime), "HH:mm", locale);
-    // console.log("dbTime: ", dbTime);
-    // console.log("locale: ", locale);
-    // console.log("newTime: ", newTime);
-
     return newTime;
 }
 
-sockets.on('connection', socket => {
-
+sockets.on("connection", socket => {
     // On send msg
-    socket.on('message', (data) => {
+    socket.on("message", (data) => {
         connection.query(`
-        INSERT INTO messages (channel_id, username, message) VALUES ( '1', ?, ?);
-            `, [data.username, data.message], () => {
+        INSERT
+        INTO messages
+        (
+            channel_id,
+            username,
+            message
+            )
+            VALUES
+            (
+                1,
+                ?,
+                ?
+                );
+                `, [data.username, data.message], () => {
                 connection.query(`
-                SELECT * FROM ( 
-                    SELECT * FROM messages ORDER BY id DESC LIMIT 1
-                    ) messages ORDER BY messages.id
+                    SELECT *
+                    FROM
+                    (
+                        SELECT *
+                        FROM messages
+                        ORDER BY id
+                        DESC
+                        LIMIT 1
+                    ) messages
+                    ORDER BY messages.id;
                     `, (err, res) => {
-                        res.forEach(message => {
-                            socket.emit('message', {id: message.id, message : message.message, username : 'You', date: localeTime(message.date)});
-                            socket.broadcast.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
+                        let messages = res.map(message => {
+                            return {
+                                id: message.id,
+                                message: message.message,
+                                username: message.username,
+                                date: localeTime(message.date)
+                            };
                         });
+                        socket.emit("newMessages", messages);
                     }
                 );
             }
@@ -89,34 +109,60 @@ sockets.on('connection', socket => {
 
     // Get all channels
     connection.query(`
-    SELECT * FROM channels;
+        SELECT *
+        FROM channels;
         `, (err, res) => {
-            res.forEach(channel => {
-                socket.emit('channel', {id: channel.id, title : channel.title, description : channel.description, icon : channel.icon});
+            let channels = res.map(channel => {
+                return {
+                    id: channel.id,
+                    title: channel.title,
+                    description: channel.description,
+                    icon: channel.icon
+                };
             });
+            socket.emit("channels", channels);
         }
     );
 
-    // Get last 10 messages
-    connection.query(`
-    SELECT * FROM ( 
-        SELECT * FROM messages WHERE channel_id = 1 ORDER BY id DESC LIMIT 10
-    ) messages ORDER BY messages.id
-        `, (err, res) => {
-            res.forEach(message => {
-                socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
-            });
-        }
-    );
+    // REMOVE?
+    // // Get last 10 messages
+    // connection.query(`
+    //     SELECT *
+    //     FROM
+    //     (
+    //         SELECT *
+    //         FROM messages
+    //         WHERE channel_id = 1
+    //         ORDER BY id
+    //         DESC
+    //         LIMIT 10
+    //     ) messages
+    //     ORDER BY messages.id;
+    //     `, (err, res) => {
+    //         res.forEach(message => {
+    //             socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
+    //         });
+    //     }
+    // );
 
-    // Get last 10 messages from channel_id = ?
-    socket.on('channel', (data) => {
+    // Get last 'n' messages from channel_id = ?
+    socket.on("channel", (data) => {
+        // Query to Get last 'n' messages from channel_id = ?
         connection.query(`
-        SELECT * FROM ( 
-            SELECT * FROM messages WHERE channel_id = ? ORDER BY id DESC LIMIT 10
-        ) messages ORDER BY messages.id
-            `, [data.channel_id], async (err, res)  =>  {
-                await socket.emit('clear');
+            SELECT *
+            FROM (
+                SELECT *
+                FROM messages
+                WHERE channel_id = ?
+                ORDER BY id
+                DESC
+                LIMIT 10
+            ) messages
+            ORDER BY messages.id;
+            `, [data.channel_id], (err, res)  =>  {
+                // Clear the chat room
+                socket.emit("clear");
+                // Create a new messages array
                 let messages = res.map(message => {
                     return {
                         id: message.id,
@@ -125,6 +171,7 @@ sockets.on('connection', socket => {
                         date: localeTime(message.date)
                     };
                 });
+                // Display the new message array
                 socket.emit("messages", messages);
             }
         );

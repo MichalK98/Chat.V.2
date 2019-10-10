@@ -10,10 +10,9 @@ import CoffeSvg from '../../svg/coffe.svg';
 
 class Channel extends Component {
     constructor() {
-        socket.on('channel', (data) => {
-            // push new message to array that exists in state
+        socket.on('channels', (data) => {
             this.setState({
-                channels: [...this.state.channels, data]
+                channels: data
             });
         });
         super();
