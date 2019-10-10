@@ -6,21 +6,19 @@ import socket from '../../ws';
 
 class Message extends Component {
     constructor() {
-        socket.on('message', (data) => {
-            // push new message to array that exists in state
+        socket.on('messages', (data) => {
             this.setState({
-                messages: [...this.state.messages, data]
+                messages: data
             });
+            console.log(this.state);
         });
-        socket.on('clear', console.log("Ohh boiii"));
-        // socket.on('clear', () => document.getElementsByClassName("chatroom").innerHTML = "");
         super();
     }
-
+    
     state = {
         messages: []
     }
-
+    
     scrollToBottom = () => {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     }
@@ -32,8 +30,9 @@ class Message extends Component {
     componentDidUpdate() {
         this.scrollToBottom();
     }
-
+    
     render() {
+        socket.on('clear', () => this.setState({ messages: [] }));
         return (
             <div>
                 <ul id="chatroom">

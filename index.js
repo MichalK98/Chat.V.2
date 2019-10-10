@@ -115,11 +115,17 @@ sockets.on('connection', socket => {
         SELECT * FROM ( 
             SELECT * FROM messages WHERE channel_id = ? ORDER BY id DESC LIMIT 10
         ) messages ORDER BY messages.id
-            `, [data.channel_id], (err, res) => {
-                socket.emit('clear');
-                res.forEach(message => {
-                    socket.emit('message', {id: message.id, message : message.message, username : message.username, date: localeTime(message.date)});
+            `, [data.channel_id], async (err, res)  =>  {
+                await socket.emit('clear');
+                let messages = res.map(message => {
+                    return {
+                        id: message.id,
+                        message : message.message,
+                        username : message.username,
+                        date: localeTime(message.date)
+                    };
                 });
+                socket.emit("messages", messages);
             }
         );
     });
