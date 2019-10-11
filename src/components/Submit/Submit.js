@@ -8,6 +8,14 @@ import socket from '../../ws';
 import SendSvg from '../../svg/send.svg';
 
 class Submit extends Component {
+    constructor() {
+        socket.on('channelActive', (data) => {
+            this.setState({
+                channel: data
+            });
+        });
+        super();
+    }
 
     state = {
         message: []
@@ -29,12 +37,13 @@ class Submit extends Component {
         e.preventDefault();
         //Emit message
         if(this.state.message.length >= 1) {
-            socket.emit("message", {message: this.state.message, username: this.props.username});
+            socket.emit("message", {channel_id: this.state.channel, message: this.state.message, username: this.props.username});
             this.clear();
         }
     }
 
     render() {
+        console.log(this.state);
         return (
             <div className="chat-footer">
                 <form onSubmit={this.handleSubmit} autoComplete="off">

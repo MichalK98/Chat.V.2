@@ -65,6 +65,7 @@ sockets.on("connection", socket => {
 
     // Get the sended message
     socket.on("message", (data) => {
+        console.log(data);
         // Query to Send the message
         connection.query(`
             INSERT
@@ -76,11 +77,11 @@ sockets.on("connection", socket => {
             )
             VALUES
             (
-                1,
+                ?,
                 ?,
                 ?
                 );
-        `, [data.username, data.message], () => {
+        `, [data.channel_id, data.username, data.message], () => {
             // Query to Get the Sended message
             connection.query(`
                 SELECT *
@@ -149,6 +150,7 @@ sockets.on("connection", socket => {
             // Create a new messages array
             let messages = res.map(message => {
                 return {
+                    channel_id: data.channel_id,
                     id: message.id,
                     message : message.message,
                     username : message.username,
@@ -157,6 +159,7 @@ sockets.on("connection", socket => {
             });
             // Display the new messages array
             socket.emit("messages", messages);
+            socket.emit("channelActive", data.channel_id);
         });
     });
 });
