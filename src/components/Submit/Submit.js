@@ -9,7 +9,7 @@ import SendSvg from '../../svg/send.svg';
 
 class Submit extends Component {
     constructor() {
-        socket.on('channelActive', (data) => {
+        socket.on("channelActive", (data) => {
             this.setState({
                 channel: data
             });
@@ -37,7 +37,7 @@ class Submit extends Component {
         e.preventDefault();
         //Emit message
         if(this.state.message.length >= 1) {
-            socket.emit("message", {channel_id: this.state.channel, message: this.state.message, username: this.props.username});
+            socket.emit("message", {channel: this.state.channel, message: this.state.message, username: this.props.username});
             this.clear();
         }
     }

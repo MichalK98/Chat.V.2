@@ -63,6 +63,27 @@ sockets.on("connection", socket => {
         sockets.emit("counter", {count:count});
     };
 
+
+
+
+
+
+
+
+    // Join
+    socket.on('join', (data) => {
+        socket.join(data.channel_title);
+        console.log("Joined channel: ", data.channel_title);
+    });
+
+
+
+
+
+
+
+
+
     // Get the sended message
     socket.on("message", (data) => {
         console.log(data);
@@ -80,8 +101,8 @@ sockets.on("connection", socket => {
                 ?,
                 ?,
                 ?
-                );
-        `, [data.channel_id, data.username, data.message], () => {
+            );
+        `, [data.channel.id, data.username, data.message], () => {
             // Query to Get the Sended message
             connection.query(`
                 SELECT *
@@ -104,9 +125,12 @@ sockets.on("connection", socket => {
                         date: localeTime(message.date)
                     };
                 });
+
                 // Display the new messages array
                 socket.emit("newMessages", messages);
-                socket.broadcast.emit("newMessages", messages);
+                // NEW
+                socket.broadcast.to(data.channel.title).emit("newMessages", messages);
+                console.log("Send to: ", data.channel.title);
             });
         });
     });
@@ -144,7 +168,7 @@ sockets.on("connection", socket => {
                 LIMIT 10
             ) messages
             ORDER BY messages.id;
-        `, [data.channel_id], (err, res)  =>  {
+        `, [data.channel.id], (err, res)  =>  {
             // Clear the chat room
             socket.emit("clear");
             // Create a new messages array
@@ -159,7 +183,7 @@ sockets.on("connection", socket => {
             });
             // Display the new messages array
             socket.emit("messages", messages);
-            socket.emit("channelActive", data.channel_id);
+            socket.emit("channelActive", data.channel);
         });
     });
 });

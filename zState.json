@@ -1,0 +1,57 @@
+{
+    "channels": [
+        {
+            "id": 1,
+            "title": "#general",
+            "description": "Just about anything",
+            "icon": "Home",
+            "messages": [
+                {
+                    "id": 1,
+                    "username": "Michal",
+                    "message": "Hello!",
+                    "date": "2019-10-11 11:44:24"
+                },
+                {
+                    "id": 2,
+                    "username": "Mattias",
+                    "message": "Hi!",
+                    "date": "2019-10-11 11:45:16"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "#fika",
+            "description": "Let's Fika!",
+            "icon": "Coffe",
+            "messages": [
+                {
+                    "id": 1,
+                    "username": "Michal",
+                    "message": "Want to eat?",
+                    "date": "2019-10-11 12:24:54"
+                },
+                {
+                    "id": 2,
+                    "username": "Mattias",
+                    "message": "Sure!",
+                    "date": "2019-10-11 12:26:02"
+                },
+                {
+                    "id": 3,
+                    "username": "Michal",
+                    "message": "Let's go then",
+                    "date": "2019-10-11 12:26:58"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "#random",
+            "description": "Random stuff",
+            "icon": "Thumbs-Up",
+            "messages": []
+        }
+    ]
+}

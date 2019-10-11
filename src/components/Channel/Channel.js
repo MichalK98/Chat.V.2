@@ -10,7 +10,7 @@ import CoffeSvg from '../../svg/coffe.svg';
 
 class Channel extends Component {
     constructor() {
-        socket.on('channels', (data) => {
+        socket.on("channels", (data) => {
             this.setState({
                 channels: data
             });
@@ -22,16 +22,18 @@ class Channel extends Component {
         channels: []
     }
 
-    handleClick(id) {
-        console.log('Channel_id = ', id);
-        socket.emit('channel', {channel_id: id});
+    handleClick(channel) {
+        console.log('Channel_id = ', channel.id);
+        socket.emit("channel", {channel: channel});
+
+        socket.emit("join", {channel_title: channel.title});
     }
 
     render() {
         return (
             <div>
                 {this.state.channels.map((channel) => (
-                    <div onClick={this.handleClick.bind(this, channel.id)} className="channels-single" key={channel.id}>
+                    <div onClick={this.handleClick.bind(this, channel)} className="channels-single" key={channel.id}>
                         <div className="icon">
                             {(channel.icon == 'Home' ? <HomeSvg/> : "")}
                             {(channel.icon == 'Thumbs-Up' ? <ThumbsUpSvg/> : "")}
