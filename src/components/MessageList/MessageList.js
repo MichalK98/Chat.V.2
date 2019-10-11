@@ -18,7 +18,6 @@ class MessageList extends Component {
             });
         });
         socket.on("newMessages", (data) => {
-            console.log(data);
             this.setState({
                 messages: [...this.state.messages, data[0]]
             });

@@ -1,4 +1,5 @@
 const express = require('express');
+const mysql = require('mysql2');
 const compression = require('compression');
 const { format } = require('date-fns');
 
@@ -15,10 +16,7 @@ app.get("/", (req, res) => {
 
 server = app.listen(PORT);
 
-// DB
-const mysql = require('mysql2');
-
-// create the connection to database
+// Create connection to database
 const connection = mysql.createPool({
     host: 'localhost',
     port: '3306',
@@ -28,51 +26,53 @@ const connection = mysql.createPool({
     namedPlaceholders: true
 });
 
-// Set the time zone on connection
-connection.on("connection", () => {
-    connection.query("SET time_zone = '+02:00'");
-});
-
 // Socket.io
 const sockets = require('socket.io')(server,{pingInterval: 1000});
 
 var count = 0;
 let locale;
-sockets.on("connection", (socket) => {
-    onConnect(socket);
-    sockets.emit("onConnect")
-    socket.on("disconnect", () => {
-        onDisconnect(socket);
-    });
-    function onConnect(socket) {
-        count++;
-        sockets.emit("counter", {count:count});
 
-        // Get local time
-        locale = Intl.DateTimeFormat().resolvedOptions().locale;
-    }
-    function onDisconnect(socket) {
-        count--;
-        sockets.emit("counter", {count:count});
-    }
-});
-
+// Change the time depended on the local time zone
 localeTime = (dbTime) => {
     newTime = format(new Date(dbTime), "HH:mm", locale);
     return newTime;
 }
 
 sockets.on("connection", socket => {
-    // On send msg
+    // Get the local time zone
+    connection.query("SET time_zone = '+02:00'");
+    // Start the Connect function
+    onConnect(socket);
+    // On Disconnect
+    socket.on("disconnect", () => {
+        // Start the Disconnect function
+        onDisconnect(socket);
+    });
+
+    // Connect function
+    function onConnect(socket) {
+        count++;
+        sockets.emit("counter", {count:count});
+        // Get local time
+        locale = Intl.DateTimeFormat().resolvedOptions().locale;
+    };
+
+    // Disconnect function
+    function onDisconnect(socket) {
+        count--;
+        sockets.emit("counter", {count:count});
+    };
+
+    // Get the sended message
     socket.on("message", (data) => {
-        console.log('Sending');
+        // Query to Send the message
         connection.query(`
-        INSERT
-        INTO messages
-        (
-            channel_id,
-            username,
-            message
+            INSERT
+            INTO messages
+            (
+                channel_id,
+                username,
+                message
             )
             VALUES
             (
@@ -80,51 +80,54 @@ sockets.on("connection", socket => {
                 ?,
                 ?
                 );
-                `, [data.username, data.message], () => {
-                connection.query(`
+        `, [data.username, data.message], () => {
+            // Query to Get the Sended message
+            connection.query(`
+                SELECT *
+                FROM
+                (
                     SELECT *
-                    FROM
-                    (
-                        SELECT *
-                        FROM messages
-                        ORDER BY id
-                        DESC
-                        LIMIT 1
-                    ) messages
-                    ORDER BY messages.id;
-                    `, (err, res) => {
-                        let messages = res.map(message => {
-                            return {
-                                id: message.id,
-                                message: message.message,
-                                username: message.username,
-                                date: localeTime(message.date)
-                            };
-                        });
-                        socket.emit("newMessages", messages);
-                        socket.broadcast.emit("newMessages", messages);
-                    }
-                );
-            }
-        );
+                    FROM messages
+                    ORDER BY id
+                    DESC
+                    LIMIT 1
+                ) messages
+                ORDER BY messages.id;
+            `, (err, res) => {
+                // Create a new messages array
+                let messages = res.map(message => {
+                    return {
+                        id: message.id,
+                        message: message.message,
+                        username: message.username,
+                        date: localeTime(message.date)
+                    };
+                });
+                // Display the new messages array
+                socket.emit("newMessages", messages);
+                socket.broadcast.emit("newMessages", messages);
+            });
+        });
     });
 
     // Get all channels
+    // Query to Get all channels
     connection.query(`
         SELECT *
         FROM channels;
-        `, (err, res) => {
-            let channels = res.map(channel => {
-                return {
-                    id: channel.id,
-                    title: channel.title,
-                    description: channel.description,
-                    icon: channel.icon
-                };
-            });
-            socket.emit("channels", channels);
-        }
-    );
+    `, (err, res) => {
+        // Create a new channels array
+        let channels = res.map(channel => {
+            return {
+                id: channel.id,
+                title: channel.title,
+                description: channel.description,
+                icon: channel.icon
+            };
+        });
+        // Display the new channels array
+        socket.emit("channels", channels);
+    });
 
     // Get last 'n' messages from channel_id = ?
     socket.on("channel", (data) => {
@@ -140,22 +143,21 @@ sockets.on("connection", socket => {
                 LIMIT 10
             ) messages
             ORDER BY messages.id;
-            `, [data.channel_id], (err, res)  =>  {
-                // Clear the chat room
-                socket.emit("clear");
-                // Create a new messages array
-                let messages = res.map(message => {
-                    return {
-                        id: message.id,
-                        message : message.message,
-                        username : message.username,
-                        date: localeTime(message.date)
-                    };
-                });
-                // Display the new message array
-                socket.emit("messages", messages);
-            }
-        );
+        `, [data.channel_id], (err, res)  =>  {
+            // Clear the chat room
+            socket.emit("clear");
+            // Create a new messages array
+            let messages = res.map(message => {
+                return {
+                    id: message.id,
+                    message : message.message,
+                    username : message.username,
+                    date: localeTime(message.date)
+                };
+            });
+            // Display the new messages array
+            socket.emit("messages", messages);
+        });
     });
 });
 
